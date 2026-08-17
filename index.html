@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dirgahayu Anugrah — Portofolio RPL</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#12141c;
+    --panel:#1a1d29;
+    --panel-2:#20232f;
+    --line:#2b2f3f;
+    --text:#edeff7;
+    --muted:#8a8fa3;
+    --mint:#7ee8b8;
+    --amber:#f2b84b;
+    --violet:#9b8cff;
+    --rose:#ff8a8a;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter', sans-serif;
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *{animation-duration:0.01ms !important; transition-duration:0.01ms !important;}
+  }
+  h1,h2,h3{font-family:'Space Grotesk', sans-serif; letter-spacing:-0.01em;}
+  .mono{font-family:'JetBrains Mono', monospace;}
+  a{color:inherit; text-decoration:none;}
+  ::selection{background:var(--mint); color:#0c0f14;}
+
+  /* ---- background grid glow ---- */
+  .bg-glow{
+    position:fixed; inset:0; z-index:-1;
+    background:
+      radial-gradient(600px circle at 15% 10%, rgba(155,140,255,0.10), transparent 60%),
+      radial-gradient(700px circle at 85% 30%, rgba(126,232,184,0.08), transparent 60%);
+  }
+
+  /* ================= EDITOR CHROME (signature element) ================= */
+  .editor{
+    max-width:1180px;
+    margin:28px auto;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:14px;
+    overflow:hidden;
+    box-shadow:0 30px 80px -30px rgba(0,0,0,0.6);
+  }
+  .titlebar{
+    display:flex; align-items:center; gap:16px;
+    padding:12px 18px;
+    background:var(--panel-2);
+    border-bottom:1px solid var(--line);
+  }
+  .dots{display:flex; gap:7px; flex-shrink:0;}
+  .dots span{width:11px; height:11px; border-radius:50%; display:block;}
+  .dots span:nth-child(1){background:#ff5f57;}
+  .dots span:nth-child(2){background:#febc2e;}
+  .dots span:nth-child(3){background:#28c840;}
+  .titlebar .path{
+    font-size:12.5px; color:var(--muted);
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+
+  .tabs{
+    display:flex; overflow-x:auto;
+    background:var(--panel-2);
+    border-bottom:1px solid var(--line);
+    scrollbar-width:none;
+  }
+  .tabs::-webkit-scrollbar{display:none;}
+  .tab{
+    flex-shrink:0;
+    font-family:'JetBrains Mono', monospace;
+    font-size:13px;
+    color:var(--muted);
+    padding:12px 20px;
+    border-right:1px solid var(--line);
+    cursor:pointer;
+    display:flex; align-items:center; gap:8px;
+    transition:color .2s, background .2s;
+    background:transparent;
+    border-top:2px solid transparent;
+  }
+  .tab .dot{width:6px; height:6px; border-radius:50%; background:var(--line);}
+  .tab:hover{color:var(--text); background:rgba(255,255,255,0.02);}
+  .tab.active{color:var(--text); background:var(--bg); border-top:2px solid var(--mint);}
+  .tab.active .dot{background:var(--mint);}
+
+  .editor-body{padding:0;}
+
+  /* ================= SECTION SHELL ================= */
+  section{padding:70px 44px; border-bottom:1px solid var(--line); position:relative;}
+  section:last-child{border-bottom:none;}
+  .comment{
+    font-family:'JetBrains Mono', monospace;
+    font-size:13px;
+    color:var(--muted);
+    margin-bottom:14px;
+  }
+  .comment .slashes{color:var(--violet);}
+  .comment .tag{color:var(--mint);}
+
+  /* ================= HERO / TERMINAL ================= */
+  #beranda{padding-top:56px;}
+  .hero-grid{
+    display:grid;
+    grid-template-columns:1.15fr 0.85fr;
+    gap:40px;
+    align-items:center;
+  }
+  .hero h1{
+    font-size:clamp(30px, 4.2vw, 48px);
+    line-height:1.15;
+    margin-bottom:16px;
+  }
+  .hero h1 .accent{color:var(--mint);}
+  .hero p.lede{
+    color:var(--muted);
+    font-size:16.5px;
+    max-width:46ch;
+    margin-bottom:28px;
+  }
+  .badge-row{display:flex; flex-wrap:wrap; gap:9px; margin-bottom:30px;}
+  .badge{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px;
+    padding:6px 11px;
+    border:1px solid var(--line);
+    border-radius:6px;
+    color:var(--muted);
+    background:var(--panel-2);
+  }
+  .cta-row{display:flex; flex-wrap:wrap; gap:12px;}
+  .btn{
+    display:inline-flex; align-items:center; gap:8px;
+    padding:12px 20px;
+    border-radius:8px;
+    font-weight:600;
+    font-size:14.5px;
+    cursor:pointer;
+    border:1px solid transparent;
+    transition:transform .15s ease, box-shadow .15s ease, background .15s ease;
+  }
+  .btn:active{transform:scale(0.97);}
+  .btn-primary{background:var(--mint); color:#0c0f14;}
+  .btn-primary:hover{box-shadow:0 10px 26px -10px rgba(126,232,184,0.45); transform:translateY(-1px);}
+  .btn-ghost{border:1px solid var(--line); color:var(--text); background:transparent;}
+  .btn-ghost:hover{border-color:var(--mint); color:var(--mint); transform:translateY(-1px);}
+
+  .hero-media{display:flex; flex-direction:column; gap:16px;}
+
+  /* ---- ID card ---- */
+  .id-card{
+    position:relative;
+    background:linear-gradient(180deg, var(--panel-2), #171a24);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:22px 20px 18px;
+    box-shadow:0 20px 45px -22px rgba(0,0,0,0.55);
+  }
+  .id-hole{
+    width:46px; height:7px;
+    background:var(--bg);
+    border:1px solid var(--line);
+    border-radius:5px;
+    margin:0 auto 16px;
+  }
+  .id-card-header{
+    display:flex; justify-content:space-between; align-items:center;
+    padding-bottom:14px; margin-bottom:16px;
+    border-bottom:1px dashed var(--line);
+  }
+  .id-card-header-label{font-size:11px; letter-spacing:0.06em; color:var(--mint);}
+  .id-card-header-year{font-size:11px; color:var(--muted);}
+  .id-card-body{display:flex; gap:16px; align-items:flex-start;}
+  .id-photo{
+    width:88px; height:104px; flex-shrink:0;
+    border-radius:10px; overflow:hidden;
+    border:1px solid var(--line);
+    background:#0e1016;
+  }
+  .id-photo img{width:100%; height:100%; object-fit:cover; object-position:top center; filter:grayscale(10%) contrast(1.03);}
+  .id-info{flex:1; padding-top:2px;}
+  .id-eyebrow{font-size:10.5px; color:var(--muted); letter-spacing:0.05em; margin-bottom:4px;}
+  .id-name{font-family:'Space Grotesk', sans-serif; font-weight:700; font-size:18px; margin-bottom:10px; line-height:1.2;}
+  .id-row{display:flex; gap:8px; font-size:12.5px; margin-bottom:5px;}
+  .id-row .id-k{color:var(--muted); width:64px; flex-shrink:0;}
+  .id-row .id-v{color:var(--text); font-weight:500;}
+  .id-perforation{
+    height:1px; margin:18px -20px 14px;
+    background:repeating-linear-gradient(90deg, var(--line) 0 6px, transparent 6px 12px);
+  }
+  .id-card-footer{display:flex; justify-content:space-between; align-items:center;}
+  .id-qr{
+    display:grid; grid-template-columns:repeat(3, 7px); grid-template-rows:repeat(3, 7px);
+    gap:3px;
+  }
+  .id-qr span{background:var(--muted); border-radius:1px; opacity:0.55;}
+  .id-qr span:nth-child(1),.id-qr span:nth-child(3),.id-qr span:nth-child(5),.id-qr span:nth-child(7),.id-qr span:nth-child(9){background:var(--mint); opacity:0.9;}
+  .id-sign{text-align:right;}
+  .id-sign-id{font-size:11px; color:var(--text);}
+  .id-sign-status{font-size:10.5px; color:var(--mint); margin-top:3px;}
+
+  .terminal{
+    background:#0e1016;
+    border:1px solid var(--line);
+    border-radius:10px;
+    overflow:hidden;
+    font-family:'JetBrains Mono', monospace;
+    font-size:13px;
+  }
+  .terminal-head{
+    padding:9px 14px; background:var(--panel-2); color:var(--muted);
+    font-size:11.5px; border-bottom:1px solid var(--line);
+  }
+  .terminal-body{padding:18px; min-height:190px;}
+  .terminal-body .line{color:var(--muted); margin-bottom:6px;}
+  .terminal-body .prompt{color:var(--mint);}
+  .terminal-body .out{color:var(--text);}
+  .terminal-body .out .k{color:var(--amber);}
+  .terminal-body .out .v{color:var(--violet);}
+  #typed-line{color:var(--text);}
+  .cursor{display:inline-block; width:7px; height:15px; background:var(--mint); margin-left:2px; animation:blink 1s steps(1) infinite; vertical-align:-2px;}
+  @keyframes blink{50%{opacity:0;}}
+
+  /* ================= NAV STICKY (mobile fallback for tabs) ================= */
+  nav.quicknav{
+    position:sticky; top:0; z-index:20;
+    display:none;
+  }
+
+  /* ================= ABOUT ================= */
+  .about-grid{display:grid; grid-template-columns:0.9fr 1.1fr; gap:48px; align-items:start;}
+  .about-grid h2{font-size:26px; margin-bottom:16px;}
+  .about-grid p{color:var(--muted); margin-bottom:14px; max-width:56ch;}
+  .stat-cards{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  .stat-card{
+    background:var(--panel-2); border:1px solid var(--line); border-radius:10px;
+    padding:18px;
+  }
+  .stat-card .num{font-family:'Space Grotesk',sans-serif; font-size:26px; color:var(--mint); font-weight:700;}
+  .stat-card .lbl{font-size:12.5px; color:var(--muted); margin-top:4px;}
+
+  /* ================= SKILLS ================= */
+  h2.section-title{font-size:26px; margin-bottom:8px;}
+  p.section-sub{color:var(--muted); margin-bottom:34px; max-width:60ch;}
+  .skill-cols{display:grid; grid-template-columns:repeat(3, 1fr); gap:22px;}
+  .skill-card{
+    background:var(--panel-2); border:1px solid var(--line); border-radius:12px;
+    padding:20px;
+  }
+  .skill-card h3{font-size:15px; margin-bottom:14px; display:flex; align-items:center; gap:9px;}
+  .skill-card h3 .sq{width:9px; height:9px; border-radius:2px; display:inline-block;}
+  .skill-tags{display:flex; flex-wrap:wrap; gap:8px;}
+  .stag{
+    font-family:'JetBrains Mono', monospace; font-size:12px;
+    padding:6px 10px; border-radius:6px;
+    background:var(--panel); border:1px solid var(--line); color:var(--text);
+  }
+
+  /* ================= PROJECTS ================= */
+  .proj-grid{display:grid; grid-template-columns:repeat(3, 1fr); gap:20px;}
+  .proj-card{
+    background:var(--panel-2);
+    border:1px solid var(--line);
+    border-radius:12px;
+    overflow:hidden;
+    cursor:pointer;
+    transition:transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+    display:flex; flex-direction:column;
+  }
+  .proj-card:hover{
+    transform:translateY(-4px);
+    border-color:var(--mint);
+    box-shadow:0 18px 40px -20px rgba(126,232,184,0.35);
+  }
+  .proj-thumb{
+    height:120px;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'JetBrains Mono', monospace;
+    font-size:34px; font-weight:600;
+    color:#0c0f14;
+  }
+  .proj-body{padding:18px; flex:1; display:flex; flex-direction:column;}
+  .proj-body h3{font-size:16px; margin-bottom:8px;}
+  .proj-body p{font-size:13.5px; color:var(--muted); margin-bottom:14px; flex:1;}
+  .proj-tags{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px;}
+  .proj-tags span{
+    font-family:'JetBrains Mono', monospace; font-size:11px;
+    padding:3px 8px; border-radius:5px;
+    background:var(--panel); border:1px solid var(--line); color:var(--muted);
+  }
+  .proj-link{
+    font-size:13px; font-weight:600; color:var(--mint);
+    display:inline-flex; align-items:center; gap:6px;
+  }
+  .proj-link svg{width:13px; height:13px;}
+
+  /* ================= CONTACT ================= */
+  #kontak{padding-bottom:80px;}
+  .contact-wrap{display:grid; grid-template-columns:1fr 1fr; gap:40px; align-items:start;}
+  .contact-copy h2{font-size:28px; margin-bottom:14px;}
+  .contact-copy p{color:var(--muted); max-width:48ch; margin-bottom:22px;}
+  .contact-info{display:flex; flex-direction:column; gap:10px; margin-bottom:10px;}
+  .contact-info .row{display:flex; gap:10px; font-size:14px; color:var(--muted);}
+  .contact-info .row span.k{color:var(--text); font-family:'JetBrains Mono', monospace; width:88px; flex-shrink:0;}
+
+  .social-grid{display:flex; flex-direction:column; gap:14px;}
+  .social-card{
+    display:flex; align-items:center; gap:16px;
+    background:var(--panel-2); border:1px solid var(--line);
+    border-radius:12px; padding:16px 18px;
+    cursor:pointer;
+    transition:transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+  }
+  .social-card:hover{
+    transform:translateX(6px);
+    box-shadow:0 14px 34px -18px rgba(0,0,0,0.55);
+  }
+  .social-card .icon{
+    width:44px; height:44px; border-radius:10px;
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+  .social-card .icon svg{width:22px; height:22px;}
+  .social-card .meta{flex:1;}
+  .social-card .meta .name{font-weight:600; font-size:15px;}
+  .social-card .meta .handle{font-family:'JetBrains Mono', monospace; font-size:12.5px; color:var(--muted); margin-top:2px;}
+  .social-card .arrow{color:var(--muted); font-size:18px;}
+  .wa:hover{border-color:#3ddc84;}
+  .ig:hover{border-color:#e1306c;}
+  .tt:hover{border-color:var(--text);}
+
+  /* ================= FOOTER ================= */
+  footer{
+    max-width:1180px; margin:0 auto; padding:22px 44px 40px;
+    display:flex; justify-content:space-between; align-items:center;
+    flex-wrap:wrap; gap:10px;
+    font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--muted);
+  }
+  footer a{color:var(--mint);}
+
+  /* ================= responsive ================= */
+  @media (max-width: 860px){
+    section{padding:52px 22px;}
+    .hero-grid, .about-grid, .contact-wrap{grid-template-columns:1fr;}
+    .skill-cols, .proj-grid{grid-template-columns:1fr;}
+    .stat-cards{grid-template-columns:1fr 1fr;}
+    .editor{margin:14px 10px;}
+    footer{padding:22px 22px 40px;}
+  }
+
+  /* focus visibility for accessibility */
+  a:focus-visible, .btn:focus-visible, .tab:focus-visible, .proj-card:focus-visible, .social-card:focus-visible{
+    outline:2px solid var(--mint); outline-offset:2px;
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-glow"></div>
+
+<div class="editor">
+  <div class="titlebar">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="path mono">dirgahayu-anugrah — portofolio — SMK RPL 2026</div>
+  </div>
+
+  <div class="tabs" id="tabbar">
+    <div class="tab active" data-target="beranda" tabindex="0" role="button"><span class="dot"></span>beranda.html</div>
+    <div class="tab" data-target="tentang" tabindex="0" role="button"><span class="dot"></span>tentang.js</div>
+    <div class="tab" data-target="skill" tabindex="0" role="button"><span class="dot"></span>skill.json</div>
+    <div class="tab" data-target="proyek" tabindex="0" role="button"><span class="dot"></span>proyek.jsx</div>
+    <div class="tab" data-target="kontak" tabindex="0" role="button"><span class="dot"></span>kontak.md</div>
+  </div>
+
+  <div class="editor-body">
+
+    <!-- ============ HERO ============ -->
+    <section id="beranda">
+      <div class="comment"><span class="slashes">//</span> <span class="tag">@beranda</span> — render(siswa)</div>
+      <div class="hero-grid">
+        <div class="hero">
+          <h1>Halo, saya <span class="accent">Dirgahayu Anugrah</span> — merakit ide jadi aplikasi yang jalan.</h1>
+          <p class="lede">Siswa kelas 12 Rekayasa Perangkat Lunak. Fokus membangun aplikasi web dan mobile sederhana, dari rancangan database sampai tampilan yang enak dipakai.</p>
+          <div class="badge-row">
+            <span class="badge">SMK RPL · Kelas 12</span>
+            <span class="badge">Siap PKL / Magang</span>
+            <span class="badge">Semparuk, Indonesia</span>
+          </div>
+          <div class="cta-row">
+            <a class="btn btn-primary" href="#proyek">Lihat proyek</a>
+            <a class="btn btn-ghost" href="#kontak">Hubungi saya</a>
+          </div>
+        </div>
+
+        <div class="hero-media">
+          <div class="id-card">
+            <div class="id-hole"></div>
+            <div class="id-card-header">
+              <span class="id-card-header-label mono">SMK · KARTU PORTOFOLIO</span>
+              <span class="id-card-header-year mono">2026</span>
+            </div>
+
+            <div class="id-card-body">
+              <div class="id-photo">
+                <img src="foto-profil.png" alt="Foto Dirgahayu Anugrah">
+              </div>
+              <div class="id-info">
+                <div class="id-eyebrow mono">Nama Siswa</div>
+                <div class="id-name">Dirgahayu Anugrah</div>
+                <div class="id-row"><span class="id-k mono">Kelas</span><span class="id-v">XII</span></div>
+                <div class="id-row"><span class="id-k mono">Jurusan</span><span class="id-v">RPL</span></div>
+                <div class="id-row"><span class="id-k mono">Domisili</span><span class="id-v">Semparuk, ID</span></div>
+              </div>
+            </div>
+
+            <div class="id-perforation"></div>
+
+            <div class="id-card-footer">
+              <div class="id-qr" aria-hidden="true">
+                <span></span><span></span><span></span>
+                <span></span><span></span><span></span>
+                <span></span><span></span><span></span>
+              </div>
+              <div class="id-sign">
+                <div class="id-sign-id mono">ID: RPL-26-001</div>
+                <div class="id-sign-status mono">Status · Aktif</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="terminal">
+            <div class="terminal-head">zsh — profil.sh</div>
+            <div class="terminal-body">
+              <div class="line"><span class="prompt">dirga@rpl</span> ~ % ./profil.sh</div>
+              <div class="out" id="typed-line"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ TENTANG ============ -->
+    <section id="tentang">
+      <div class="comment"><span class="slashes">//</span> <span class="tag">@tentang</span> — const profil = {'{'} ... {'}'}</div>
+      <div class="about-grid">
+        <div>
+          <h2>Tentang saya</h2>
+          <p>Saya siswa kelas 12 jurusan Rekayasa Perangkat Lunak (RPL) di SMK, dan sedang menyiapkan diri untuk Praktik Kerja Lapangan (PKL) maupun kerja pertama di bidang pengembangan perangkat lunak.</p>
+          <p>Saya suka membangun proyek dari nol: mulai dari merancang alur aplikasi, membuat database, sampai menyusun tampilan antarmuka yang mudah dipakai orang lain. Belajar hal baru lewat proyek nyata, bukan cuma teori.</p>
+        </div>
+        <div class="stat-cards">
+          <div class="stat-card"><div class="num">8+</div><div class="lbl">Proyek dikerjakan</div></div>
+          <div class="stat-card"><div class="num">3</div><div class="lbl">Bahasa pemrograman dikuasai</div></div>
+          <div class="stat-card"><div class="num">2</div><div class="lbl">Sertifikat pelatihan</div></div>
+          <div class="stat-card"><div class="num">1</div><div class="lbl">Tim ekskul coding aktif</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SKILL ============ -->
+    <section id="skill">
+      <div class="comment"><span class="slashes">//</span> <span class="tag">@skill</span> — daftar kemampuan</div>
+      <h2 class="section-title">Skill &amp; tools</h2>
+      <p class="section-sub">Kemampuan yang sudah dipelajari dan dipakai langsung di proyek sekolah maupun proyek pribadi.</p>
+      <div class="skill-cols">
+        <div class="skill-card">
+          <h3><span class="sq" style="background:var(--mint)"></span>Bahasa Pemrograman</h3>
+          <div class="skill-tags">
+            <span class="stag">HTML</span><span class="stag">CSS</span><span class="stag">JavaScript</span>
+            <span class="stag">PHP</span><span class="stag">Java</span><span class="stag">SQL</span>
+          </div>
+        </div>
+        <div class="skill-card">
+          <h3><span class="sq" style="background:var(--violet)"></span>Framework &amp; Tools</h3>
+          <div class="skill-tags">
+            <span class="stag">Bootstrap</span><span class="stag">MySQL</span><span class="stag">Laravel</span>
+            <span class="stag">Git &amp; GitHub</span><span class="stag">Figma</span>
+          </div>
+        </div>
+        <div class="skill-card">
+          <h3><span class="sq" style="background:var(--amber)"></span>Kemampuan Lain</h3>
+          <div class="skill-tags">
+            <span class="stag">UI/UX Dasar</span><span class="stag">Kerja Tim</span>
+            <span class="stag">Debugging</span><span class="stag">Presentasi Proyek</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PROYEK ============ -->
+    <section id="proyek">
+      <div class="comment"><span class="slashes">//</span> <span class="tag">@proyek</span> — return proyek.map(p =&gt; ...)</div>
+      <h2 class="section-title">Proyek</h2>
+      <p class="section-sub">Beberapa proyek yang sudah dikerjakan untuk tugas sekolah, ekskul, dan latihan pribadi. Klik untuk lihat detail atau kode sumbernya.</p>
+      <div class="proj-grid">
+
+        <a class="proj-card" href="https://github.com/" target="_blank" rel="noopener">
+          <div class="proj-thumb" style="background:var(--mint);">SI</div>
+          <div class="proj-body">
+            <h3>Sistem Informasi Perpustakaan Sekolah</h3>
+            <p>Aplikasi web untuk mencatat peminjaman dan pengembalian buku, lengkap dengan dashboard admin.</p>
+            <div class="proj-tags"><span>PHP</span><span>MySQL</span><span>Bootstrap</span></div>
+            <span class="proj-link">Lihat kode di GitHub
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H8M17 7V16"/></svg>
+            </span>
+          </div>
+        </a>
+
+        <a class="proj-card" href="https://github.com/" target="_blank" rel="noopener">
+          <div class="proj-thumb" style="background:var(--violet);">TO</div>
+          <div class="proj-body">
+            <h3>Aplikasi To-Do List Harian</h3>
+            <p>Aplikasi pencatat tugas sederhana berbasis JavaScript dengan penyimpanan data di browser.</p>
+            <div class="proj-tags"><span>HTML</span><span>CSS</span><span>JavaScript</span></div>
+            <span class="proj-link">Lihat kode di GitHub
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H8M17 7V16"/></svg>
+            </span>
+          </div>
+        </a>
+
+        <a class="proj-card" href="https://github.com/" target="_blank" rel="noopener">
+          <div class="proj-thumb" style="background:var(--amber);">KS</div>
+          <div class="proj-body">
+            <h3>Company Profile Toko Online (Tugas PKL)</h3>
+            <p>Landing page company profile untuk UMKM lokal, responsif dan siap dipakai untuk promosi produk.</p>
+            <div class="proj-tags"><span>HTML</span><span>CSS</span><span>JavaScript</span></div>
+            <span class="proj-link">Lihat kode di GitHub
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H8M17 7V16"/></svg>
+            </span>
+          </div>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- ============ KONTAK ============ -->
+    <section id="kontak">
+      <div class="comment"><span class="slashes">//</span> <span class="tag">@kontak</span> — mari terhubung</div>
+      <div class="contact-wrap">
+        <div class="contact-copy">
+          <h2>Yuk terhubung</h2>
+          <p>Terbuka untuk kesempatan PKL, magang, kerja sama proyek, atau sekadar ngobrol soal coding. Klik salah satu platform di samping, atau hubungi langsung lewat info di bawah.</p>
+          <div class="contact-info">
+            <div class="row"><span class="k mono">Email</span> samlekomm168@gmail.com</div>
+            <div class="row"><span class="k mono">Lokasi</span> Semparuk, Indonesia</div>
+            <div class="row"><span class="k mono">Status</span> Terbuka untuk PKL &amp; magang</div>
+          </div>
+        </div>
+
+        <div class="social-grid">
+          <a class="social-card wa" href="https://wa.me/62895368044234?text=Halo%20Dirga%2C%20saya%20lihat%20portofolio%20kamu" target="_blank" rel="noopener">
+            <div class="icon" style="background:#25D366;">
+              <svg viewBox="0 0 24 24" fill="#0c0f14"><path d="M17.6 6.32A8.86 8.86 0 0 0 12.05 4a8.94 8.94 0 0 0-7.73 13.4L3 21l3.71-1.28a8.9 8.9 0 0 0 5.33 1.72h.01A8.94 8.94 0 0 0 21 12.5a8.9 8.9 0 0 0-3.4-6.18Zm-5.55 13.7h-.01a7.4 7.4 0 0 1-4.61-1.59l-.33-.22-3.14 1.08.98-3.07-.24-.34a7.44 7.44 0 0 1 11.6-9.11 7.4 7.4 0 0 1 2.17 5.24 7.44 7.44 0 0 1-6.42 8.01Zm4.08-5.55c-.22-.11-1.32-.65-1.53-.73-.2-.08-.35-.11-.5.11-.15.22-.58.73-.7.88-.13.15-.26.16-.48.05-.22-.11-.94-.35-1.79-1.11a6.7 6.7 0 0 1-1.24-1.54c-.13-.22-.01-.34.1-.45.1-.1.22-.26.33-.39.11-.13.15-.22.22-.37.07-.15.04-.28-.02-.39-.06-.11-.5-1.2-.68-1.65-.18-.43-.36-.37-.5-.38h-.43a.82.82 0 0 0-.6.28 2.5 2.5 0 0 0-.78 1.86c0 1.1.8 2.16.91 2.31.11.15 1.57 2.4 3.81 3.36.53.23.94.37 1.27.47.53.17 1.01.15 1.39.09.42-.06 1.32-.54 1.51-1.06.19-.52.19-.96.13-1.06-.06-.1-.2-.15-.42-.26Z"/></svg>
+            </div>
+            <div class="meta">
+              <div class="name">WhatsApp</div>
+              <div class="handle">+62 895‑3680‑44234 · chat langsung</div>
+            </div>
+            <div class="arrow">↗</div>
+          </a>
+
+          <a class="social-card ig" href="https://instagram.com/dirgaa__2" target="_blank" rel="noopener">
+            <div class="icon" style="background:linear-gradient(135deg,#feda75,#d62976,#4f5bd5);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.4" cy="6.6" r="1"/></svg>
+            </div>
+            <div class="meta">
+              <div class="name">Instagram</div>
+              <div class="handle">@dirgaa__2 · keseharian &amp; behind the scenes</div>
+            </div>
+            <div class="arrow">↗</div>
+          </a>
+
+          <a class="social-card tt" href="https://www.tiktok.com/@dirgaa_170?_r=1&_t=ZS-98xBKdcryNw" target="_blank" rel="noopener">
+            <div class="icon" style="background:#111318;">
+              <svg viewBox="0 0 24 24" fill="#fff"><path d="M16.6 5.82a4.28 4.28 0 0 1-1.86-3.15h-3.05v13.36a2.6 2.6 0 1 1-2.14-2.56V10.4a5.6 5.6 0 1 0 5.19 5.58V9.4a7.2 7.2 0 0 0 4.14 1.32V7.6a4.26 4.26 0 0 1-2.28-1.78Z"/></svg>
+            </div>
+            <div class="meta">
+              <div class="name">TikTok</div>
+              <div class="handle">@dirgaa_170 · progres belajar coding</div>
+            </div>
+            <div class="arrow">↗</div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<footer>
+  <div>© 2026 Dirgahayu Anugrah · dibuat dengan HTML, CSS &amp; JavaScript</div>
+  <div>Dibuat untuk keperluan portofolio SMK RPL</div>
+</footer>
+
+<script>
+  // ---- tab & nav click -> smooth scroll + active state ----
+  const tabs = document.querySelectorAll('.tab');
+  const sections = [...tabs].map(t => document.getElementById(t.dataset.target));
+
+  function activateTab(target){
+    tabs.forEach(t => t.classList.toggle('active', t.dataset.target === target));
+  }
+
+  tabs.forEach(tab => {
+    const go = () => {
+      const el = document.getElementById(tab.dataset.target);
+      if(el){ el.scrollIntoView({behavior:'smooth', block:'start'}); }
+      activateTab(tab.dataset.target);
+    };
+    tab.addEventListener('click', go);
+    tab.addEventListener('keydown', e => { if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); go(); } });
+  });
+
+  // ---- scroll spy: highlight tab matching section in view ----
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        activateTab(entry.target.id);
+      }
+    });
+  }, { rootMargin: '-40% 0px -50% 0px', threshold: 0 });
+  sections.forEach(s => s && observer.observe(s));
+
+  // ---- terminal typing effect ----
+  const outputHTML =
+    '<div style="margin-top:6px;"><span class="k">nama</span>: <span class="v">"Dirgahayu Anugrah"</span></div>' +
+    '<div><span class="k">kelas</span>: <span class="v">"XII RPL"</span></div>' +
+    '<div><span class="k">fokus</span>: <span class="v">"Web &amp; Mobile Development"</span></div>' +
+    '<div><span class="k">status</span>: <span class="v">"Siap PKL / Magang"</span></div>';
+
+  const typedLineEl = document.getElementById('typed-line');
+  const introText = 'Memuat data siswa...';
+  let i = 0;
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function typeIntro(){
+    if(prefersReduced){
+      typedLineEl.innerHTML = introText;
+      setTimeout(()=>{ typedLineEl.innerHTML = outputHTML; }, 300);
+      return;
+    }
+    if(i <= introText.length){
+      typedLineEl.innerHTML = introText.slice(0, i) + '<span class="cursor"></span>';
+      i++;
+      setTimeout(typeIntro, 45);
+    } else {
+      setTimeout(()=>{ typedLineEl.innerHTML = outputHTML; }, 350);
+    }
+  }
+  typeIntro();
+</script>
+
+</body>
+</html>
